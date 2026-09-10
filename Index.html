@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>እንኳን አደረሳችሁ — 2019</title>
+  <style>
+    :root {
+      --gold: #f4c430;
+      --gold-soft: #ffe27a;
+      --green: #0b8a3e;
+      --red: #c81e1e;
+      --night: #07030f;
+      --petal: #ffd54a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100%;
+      background: radial-gradient(ellipse at top, #1a0a2e 0%, var(--night) 55%);
+      color: #fff8e7;
+      font-family: "Noto Sans Ethiopic", "Nyala", "Abyssinica SIL", "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    canvas#fireworks {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .petals {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .petal {
+      position: absolute;
+      top: -40px;
+      width: 18px;
+      height: 18px;
+      background: radial-gradient(circle at 30% 30%, #fff6b0, var(--petal) 55%, #e8a800);
+      border-radius: 70% 0 70% 0;
+      opacity: 0.85;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.9; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0.2; }
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 3;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 16px 60px;
+    }
+
+    header {
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .flag {
+      display: inline-flex;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 0 24px rgba(244, 196, 48, 0.35);
+      margin-bottom: 18px;
+    }
+    .flag span { width: 42px; height: 12px; display: block; }
+    .flag .g { background: var(--green); }
+    .flag .y { background: var(--gold); }
+    .flag .r { background: var(--red); }
+
+    h1.greeting {
+      font-size: clamp(1.6rem, 5vw, 3rem);
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 18px rgba(244, 196, 48, 0.55), 0 4px 20px rgba(0,0,0,0.6);
+      animation: glow 2.4s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.25); }
+    }
+
+    .year-box {
+      margin: 28px 0 10px;
+      min-height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .year {
+      font-size: clamp(4.2rem, 18vw, 9rem);
+      font-weight: 800;
+      line-height: 1;
+      background: linear-gradient(180deg, #fff6c8 0%, var(--gold) 45%, #c98900 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: none;
+      filter: drop-shadow(0 8px 24px rgba(244, 196, 48, 0.45));
+      transition: transform 0.25s ease;
+    }
+
+    .year.pop {
+      animation: pop 0.45s cubic-bezier(.2,1.4,.3,1);
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.55) rotate(-8deg); opacity: 0.3; }
+      60% { transform: scale(1.12) rotate(3deg); }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+
+    .year.final {
+      animation: finalShine 1.2s ease;
+    }
+
+    @keyframes finalShine {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.18); }
+      100% { transform: scale(1); }
+    }
+
+    .sub {
+      opacity: 0.85;
+      font-size: 1.05rem;
+      margin-bottom: 28px;
+    }
+
+    .stage {
+      width: min(920px, 100%);
+      display: grid;
+      gap: 22px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      border: 1px solid rgba(244, 196, 48, 0.28);
+      border-radius: 22px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+    }
+
+    .card h2 {
+      font-size: 1.15rem;
+      color: var(--gold-soft);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .video-wrap {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #111;
+      aspect-ratio: 16/9;
+    }
+
+    .video-wrap video,
+    .video-wrap img.cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .img-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 720px) {
+      .img-row { grid-template-columns: 1.1fr 0.9fr; align-items: start; }
+    }
+
+    #cardCanvas {
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      display: block;
+      background: #1a1020;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 14px;
+    }
+
+    button, a.btn, label.btn-style {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      text-decoration: none;
+      color: #2a1a00;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffe27a, var(--gold));
+      box-shadow: 0 8px 18px rgba(244, 196, 48, 0.28);
+      font-family: inherit;
+      display: inline-block;
+      text-align: center;
+    }
+
+    button:hover, a.btn:hover, label.btn-style:hover { filter: brightness(1.06); }
+
+    button.ghost {
+      background: transparent;
+      color: var(--gold-soft);
+      border: 1px solid rgba(244, 196, 48, 0.45);
+      box-shadow: none;
+    }
+
+    footer {
+      margin-top: 28px;
+      opacity: 0.7;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .hidden { display: none !important; }
+
+    .burst-msg {
+      min-height: 28px;
+      text-align: center;
+      color: var(--gold-soft);
+      font-size: 1.15rem;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: 0.5s ease;
+    }
+    .burst-msg.show { opacity: 1; transform: none; }
+
+    .admin-toggle {
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      z-index: 20;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      padding: 0;
+      font-size: 1.2rem;
+      background: #f4c430;
+    }
+
+    /* አዲስ የአድሚን ፓነል ስታይል (ከምስሉ ጋር የተጣጣመ) */
+    .admin-panel {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      background: #eef2ed;
+      color: #333;
+      padding: 20px;
+      overflow-y: auto;
+      font-family: inherit;
+    }
+
+    .admin-header {
+      background: #0b8a3e;
+      color: #fff;
+      padding: 14px 18px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .admin-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .admin-card h4 {
+      color: #0b8a3e;
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+    }
+
+    .preview-box {
+      border: 2px dashed #ccc;
+      border-radius: 12px;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      margin-bottom: 16px;
+      background: #fafafa;
+      overflow: hidden;
+    }
+
+    .preview-box img, .preview-box video {
+      max-width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+    }
+
+    .file-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .custom-file-btn {
+      background: #f4c430;
+      color: #000;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: #f59e0b;
+      color: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 1rem;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .admin-status {
+      font-size: 0.9rem;
+      color: #0b8a3e;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    #guestImg {
+      width: 100%;
+      border-radius: 16px;
+      display: none;
+      max-height: 70vh;
+      object-fit: cover;
+    }
+
+    .video-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a1a1a;
+      color: #aaa;
+      font-size: 0.95rem;
+      text-align: center;
+      padding: 16px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fireworks"></canvas>
+  <div class="petals" id="petals"></div>
+
+  <div class="wrap">
+    <header>
+      <div class="flag" aria-hidden="true">
+        <span class="g"></span><span class="y"></span><span class="r"></span>
+      </div>
+      <h1 class="greeting">እንኳን አደረሳችሁ</h1>
+      <p class="sub">መልካም አዲስ ዓመት — እንቁጣጣሽ</p>
+    </header>
+
+    <div class="year-box">
+      <div class="year" id="year">2010</div>
+    </div>
+    <p class="burst-msg" id="burstMsg"></p>
+
+    <div class="stage hidden" id="after">
+      <section class="card">
+        <h2>የአበባ ውበት</h2>
+        <div class="video-wrap">
+          <div class="video-placeholder" id="videoPh">ቪድዮ ለማስገባት ከታች ያለውን አድሚን ይጫኑ</div>
+          <video id="flowerVideo" autoplay muted loop playsinline controls></video>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>የእንኳን አደረሳችሁ ካርድ — አስቀምጡ / አውርዱ</h2>
+        <div class="img-row">
+          <img id="guestImg" alt="የተመረጠ ምስል" />
+          <canvas id="cardCanvas" width="900" height="1200"></canvas>
+          <div>
+            <p style="line-height:1.7;opacity:.9;margin-bottom:12px;">
+              ነባሪ ካርድ ወይም ከጋለሪ የመረጡት ምስል እዚህ ይታያል።
+              <strong>አውርድ</strong> ብለው ማስቀመጥ ይችላሉ።
+            </p>
+            <div class="actions">
+              <button type="button" id="downloadBtn">ምስሉን አውርድ</button>
+              <button type="button" class="ghost" id="againBtn">እሳት ብልጭታ እንደገና</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>እንኳን ለ2019 አዲስ ዓመት በሰላም አደረሳችሁ</footer>
+  </div>
+
+  <button type="button" class="admin-toggle" id="adminToggle" title="አድሚን">⚙</button>
+
+  <!-- የአድሚን ገፅ (በምስሉ መሰረት የተሰራ) -->
+  <div class="admin-panel hidden" id="adminPanel">
+    <div class="admin-header">
+      <span>አድሚን ገጽ</span>
+      <span id="closeAdmin" style="cursor:pointer;">✕</span>
+    </div>
+
+    <!-- ምስል መጫኛ -->
+    <div class="admin-card">
+      <div class="preview-box" id="imgPrevBox">ምስል አልተመረጠም</div>
+      <div class="file-input-wrapper">
+        <label class="custom-file-btn">
+          Choose file
+          <input type="file" id="imageInput" accept="image/*" style="display:none;" />
+        </label>
+        <span id="imgFileName" style="font-size:0.85rem; color:#666;">No file chosen</span>
+      </div>
+      <button type="button" class="btn-submit" id="saveImgBtn">ምስሉን አጽድቅ</button>
+    </div>
+
+    <!-- ቪድዮ መጫኛ -->
+    <div class="admin-card">
+      <h4>ቪድዮ ያስገቡ</h4>
+      <div class="preview-box" id="vidPrevBox">ቪድዮ አልተመረጠም</div>
+      <div class="file-input-wrapper">
+        <label class="custom-file-btn">
+          Choose file
+          <input type="file" id="videoInput" accept="video/*" style="display:none;" />
+        </label>
+        <span id="vidFileName" style="font-size:0.85rem; color:#666;">No file chosen</span>
+      </div>
+      <button type="button" class="btn-submit" id="saveVidBtn">ቪድዮ አጽድቅ</button>
+    </div>
+
+    <div style="text-align:center;">
+      <button type="button" class="ghost" id="clearMedia" style="color:#c81e1e; border-color:#c81e1e;">የገባውን አጽዳ</button>
+    </div>
+    <p class="admin-status" id="adminStatus"></p>
+  </div>
+
+  <script>
+    const yearEl = document.getElementById("year");
+    const after = document.getElementById("after");
+    const burstMsg = document.getElementById("burstMsg");
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+    const cardCanvas = document.getElementById("cardCanvas");
+    const cctx = cardCanvas.getContext("2d");
+
+    function resize() {
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+    }
+    addEventListener("resize", resize);
+    resize();
+
+    const petalsBox = document.getElementById("petals");
+    for (let i = 0; i < 28; i++) {
+      const p = document.createElement("div");
+      p.className = "petal";
+      p.style.left = Math.random() * 100 + "%";
+      p.style.animationDuration = 7 + Math.random() * 9 + "s";
+      p.style.animationDelay = Math.random() * 8 + "s";
+      p.style.transform = "scale(" + (0.6 + Math.random() * 1.1) + ")";
+      petalsBox.appendChild(p);
+    }
+
+    let particles = [];
+    function boom(x, y) {
+      const colors = ["#f4c430", "#ff6b6b", "#7cffb2", "#fff1a8", "#ff9f1c", "#ffffff"];
+      const n = 70 + Math.floor(Math.random() * 40);
+      for (let i = 0; i < n; i++) {
+        const a = (Math.PI * 2 * i) / n + Math.random() * 0.2;
+        const s = 1.5 + Math.random() * 5.5;
+        particles.push({
+          x, y,
+          vx: Math.cos(a) * s,
+          vy: Math.sin(a) * s,
+          life: 1,
+          decay: 0.008 + Math.random() * 0.012,
+          color: colors[i % colors.length],
+          size: 1.5 + Math.random() * 2.2
+        });
+      }
+    }
+
+    let fireworksOn = false;
+    function loop() {
+      ctx.fillStyle = "rgba(7,3,15,0.18)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (fireworksOn && Math.random() < 0.06) {
+        boom(80 + Math.random() * (canvas.width - 160), 60 + Math.random() * (canvas.height * 0.45));
+      }
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.035;
+        p.life -= p.decay;
+        ctx.globalAlpha = Math.max(p.life, 0);
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      particles = particles.filter((p) => p.life > 0);
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+
+    async function runYear() {
+      for (let y = 2010; y <= 2019; y++) {
+        yearEl.textContent = y;
+        yearEl.classList.remove("pop");
+        void yearEl.offsetWidth;
+        yearEl.classList.add("pop");
+        const delay = y === 2019 ? 700 : 220 + (y - 2010) * 35;
+        await sleep(delay);
+      }
+      yearEl.classList.add("final");
+      fireworksOn = true;
+      for (let i = 0; i < 8; i++) {
+        boom(100 + Math.random() * (canvas.width - 200), 80 + Math.random() * 220);
+      }
+      burstMsg.textContent = "እንኳን ወደ 2019 አዲስ ዓመት በደስታ አደረሳችሁ!";
+      burstMsg.classList.add("show");
+      after.classList.remove("hidden");
+      const v = document.getElementById("flowerVideo");
+      v.play().catch(() => {});
+      drawCard();
+    }
+
+    function drawCard() {
+      const w = cardCanvas.width;
+      const h = cardCanvas.height;
+      const g = cctx.createLinearGradient(0, 0, w, h);
+      g.addColorStop(0, "#1b0b2e");
+      g.addColorStop(0.55, "#0d3b24");
+      g.addColorStop(1, "#4a120f");
+      cctx.fillStyle = g;
+      cctx.fillRect(0, 0, w, h);
+
+      cctx.fillStyle = "#0b8a3e";
+      cctx.fillRect(0, 0, w, 28);
+      cctx.fillStyle = "#f4c430";
+      cctx.fillRect(0, 28, w, 28);
+      cctx.fillStyle = "#c81e1e";
+      cctx.fillRect(0, 56, w, 28);
+
+      for (let i = 0; i < 40; i++) {
+        const x = Math.random() * w;
+        const y = 120 + Math.random() * (h - 200);
+        drawFlower(x, y, 18 + Math.random() * 28);
+      }
+
+      cctx.textAlign = "center";
+      cctx.fillStyle = "#fff6c8";
+      cctx.font = "bold 54px serif";
+      cctx.fillText("እንኳን አደረሳችሁ", w / 2, h * 0.42);
+
+      cctx.fillStyle = "#f4c430";
+      cctx.font = "bold 120px serif";
+      cctx.fillText("2019", w / 2, h * 0.55);
+
+      cctx.fillStyle = "#ffe9a8";
+      cctx.font = "32px serif";
+      cctx.fillText("መልካም እንቁጣጣሽ", w / 2, h * 0.64);
+      cctx.font = "26px serif";
+      cctx.fillText("ሰላም፣ ጤና እና ደስታ ይሙላላችሁ", w / 2, h * 0.70);
+    }
+
+    function drawFlower(x, y, r) {
+      cctx.save();
+      cctx.translate(x, y);
+      for (let i = 0; i < 8; i++) {
+        cctx.rotate(Math.PI / 4);
+        cctx.beginPath();
+        cctx.ellipse(0, -r * 0.55, r * 0.28, r * 0.55, 0, 0, Math.PI * 2);
+        cctx.fillStyle = i % 2 ? "#ffd54a" : "#ffe082";
+        cctx.fill();
+      }
+      cctx.beginPath();
+      cctx.arc(0, 0, r * 0.22, 0, Math.PI * 2);
+      cctx.fillStyle = "#c67c00";
+      cctx.fill();
+      cctx.restore();
+    }
+
+    document.getElementById("againBtn").addEventListener("click", () => {
+      for (let i = 0; i < 10; i++) {
+        boom(80 + Math.random() * (canvas.width - 160), 50 + Math.random() * 260);
+      }
+    });
+
+    const videoEl = document.getElementById("flowerVideo");
+    const videoPh = document.getElementById("videoPh");
+    const guestImg = document.getElementById("guestImg");
+    const adminToggle = document.getElementById("adminToggle");
+    const adminPanel = document.getElementById("adminPanel");
+    const closeAdmin = document.getElementById("closeAdmin");
+    const adminStatus = document.getElementById("adminStatus");
+
+    const DB_NAME = "enkutatash2019";
+    let currentImageUrl = null;
+    let selectedImgFile = null;
+    let selectedVidFile = null;
+
+    // የይለፍ ቃል (Password) ማረጋገጫ - 121310
+    adminToggle.addEventListener("click", () => {
+      if (adminPanel.classList.contains("hidden")) {
+        const pass = prompt("እባክዎን የአድሚን ኮድ ያስገቡ:");
+        if (pass === "121310") {
+          adminPanel.classList.remove("hidden");
+        } else if (pass !== null) {
+          alert("የተሳሳተ ኮድ ነው!");
+        }
+      } else {
+        adminPanel.classList.add("hidden");
+      }
+    });
+
+    closeAdmin.addEventListener("click", () => {
+      adminPanel.classList.add("hidden");
+    });
+
+    function setStatus(t) { adminStatus.textContent = t; }
+
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains("media")) db.createObjectStore("media");
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function saveBlob(key, blob) {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("media", "readwrite");
+        tx.objectStore("media").put(blob, key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    async function loadBlob(key) {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("media", "readonly");
+        const r = tx.objectStore("media").get(key);
+        r.onsuccess = () => resolve(r.result || null);
+        r.onerror = () => reject(r.error);
+      });
+    }
+
+    async function delBlob(key) {
+      const db = await openDB();
+      return new Promise((resolve) => {
+        const tx = db.transaction("media", "readwrite");
+        tx.objectStore("media").delete(key);
+        tx.oncomplete = () => resolve();
+      });
+    }
+
+    function applyVideo(blob) {
+      const url = URL.createObjectURL(blob);
+      videoEl.src = url;
+      videoEl.classList.remove("hidden");
+      videoPh.style.display = "none";
+      videoEl.play().catch(() => {});
+    }
+
+    function applyImage(blob) {
+      const url = URL.createObjectURL(blob);
+      currentImageUrl = url;
+      guestImg.src = url;
+      guestImg.style.display = "block";
+      cardCanvas.style.display = "none";
+    }
+
+    // ምስል ሲመረጥ Preview ማሳያ
+    document.getElementById("imageInput").addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      selectedImgFile = file;
+      document.getElementById("imgFileName").textContent = file.name;
+      const url = URL.createObjectURL(file);
+      document.getElementById("imgPrevBox").innerHTML = `<img src="${url}" />`;
+    });
+
+    // ቪድዮ ሲመረጥ Preview ማሳያ
+    document.getElementById("videoInput").addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      selectedVidFile = file;
+      document.getElementById("vidFileName").textContent = file.name;
+      const url = URL.createObjectURL(file);
+      document.getElementById("vidPrevBox").innerHTML = `<video src="${url}" controls style="max-height:150px;"></video>`;
+    });
+
+    // ምስሉን ማጽደቂያ ቁልፍ
+    document.getElementById("saveImgBtn").addEventListener("click", async () => {
+      if (!selectedImgFile) {
+        alert("እባክዎን መጀመሪያ ምስል ይምረጡ!");
+        return;
+      }
+      try {
+        await saveBlob("image", selectedImgFile);
+        applyImage(selectedImgFile);
+        setStatus("ምስል በስኬት ጸድቋል!");
+      } catch (err) {
+        applyImage(selectedImgFile);
+        setStatus("ምስል ታይቷል (ማስቀመጥ አልተቻለም)");
+      }
+    });
+
+    // ቪድዮውን ማጽደቂያ ቁልፍ
+    document.getElementById("saveVidBtn").addEventListener("click", async () => {
+      if (!selectedVidFile) {
+        alert("እባክዎን መጀመሪያ ቪድዮ ይምረጡ!");
+        return;
+      }
+      try {
+        await saveBlob("video", selectedVidFile);
+        applyVideo(selectedVidFile);
+        setStatus("ቪድዮ በስኬት ጸድቋል!");
+      } catch (err) {
+        applyVideo(selectedVidFile);
+        setStatus("ቪድዮ ታይቷል (ማስቀመጥ አልተቻለም)");
+      }
+    });
+
+    document.getElementById("clearMedia").addEventListener("click", async () => {
+      await delBlob("video");
+      await delBlob("image");
+      videoEl.removeAttribute("src");
+      videoEl.load();
+      videoPh.style.display = "flex";
+      guestImg.removeAttribute("src");
+      guestImg.style.display = "none";
+      cardCanvas.style.display = "block";
+      currentImageUrl = null;
+      document.getElementById("imgPrevBox").textContent = "ምስል አልተመረጠም";
+      document.getElementById("vidPrevBox").textContent = "ቪድዮ አልተመረጠም";
+      document.getElementById("imgFileName").textContent = "No file chosen";
+      document.getElementById("vidFileName").textContent = "No file chosen";
+      setStatus("ተጽርዟል");
+    });
+
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      if (currentImageUrl) {
+        const a = document.createElement("a");
+        a.download = "enkutatash-2019.jpg";
+        a.href = currentImageUrl;
+        a.click();
+        return;
+      }
+      const a = document.createElement("a");
+      a.download = "enkutatash-2019.png";
+      a.href = cardCanvas.toDataURL("image/png");
+      a.click();
+    });
+
+    (async function restore() {
+      try {
+        const v = await loadBlob("video");
+        if (v) applyVideo(v);
+        const im = await loadBlob("image");
+        if (im) applyImage(im);
+      } catch (_) {}
+    })();
+
+    runYear();
+  </script>
+</body>
+</html>
