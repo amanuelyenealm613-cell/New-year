@@ -2,10 +2,9 @@
 <html lang="am">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>እንኳን አደረሳችሁ — 2019</title>
   
-  <!-- Firebase SDKs (v10 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
@@ -22,7 +21,8 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
-      min-height: 100%;
+      width: 100%;
+      min-height: 100vh;
       background: radial-gradient(ellipse at top, #1a0a2e 0%, var(--night) 55%);
       color: #fff8e7;
       font-family: "Noto Sans Ethiopic", "Nyala", "Abyssinica SIL", "Segoe UI", sans-serif;
@@ -32,6 +32,8 @@
     canvas#fireworks {
       position: fixed;
       inset: 0;
+      width: 100%;
+      height: 100%;
       z-index: 1;
       pointer-events: none;
     }
@@ -47,8 +49,8 @@
     .petal {
       position: absolute;
       top: -40px;
-      width: 18px;
-      height: 18px;
+      width: clamp(12px, 3vw, 18px);
+      height: clamp(12px, 3vw, 18px);
       background: radial-gradient(circle at 30% 30%, #fff6b0, var(--petal) 55%, #e8a800);
       border-radius: 70% 0 70% 0;
       opacity: 0.85;
@@ -64,34 +66,38 @@
     .wrap {
       position: relative;
       z-index: 3;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 28px 16px 60px;
+      padding: 16px 12px 60px;
     }
 
     header {
       text-align: center;
-      margin-top: 12px;
+      margin-top: 8px;
+      width: 100%;
     }
 
     .flag {
       display: inline-flex;
-      border-radius: 6px;
+      border-radius: 4px;
       overflow: hidden;
-      box-shadow: 0 0 24px rgba(244, 196, 48, 0.35);
-      margin-bottom: 18px;
+      box-shadow: 0 0 16px rgba(244, 196, 48, 0.35);
+      margin-bottom: 12px;
     }
-    .flag span { width: 42px; height: 12px; display: block; }
+    .flag span { width: clamp(28px, 8vw, 42px); height: 10px; display: block; }
     .flag .g { background: var(--green); }
     .flag .y { background: var(--gold); }
     .flag .r { background: var(--red); }
 
     h1.greeting {
-      font-size: clamp(1.6rem, 5vw, 3rem);
-      letter-spacing: 0.04em;
-      text-shadow: 0 0 18px rgba(244, 196, 48, 0.55), 0 4px 20px rgba(0,0,0,0.6);
+      font-size: clamp(1.4rem, 6vw, 2.5rem);
+      letter-spacing: 0.02em;
+      text-shadow: 0 0 14px rgba(244, 196, 48, 0.55);
       animation: glow 2.4s ease-in-out infinite;
     }
 
@@ -101,22 +107,23 @@
     }
 
     .year-box {
-      margin: 28px 0 10px;
-      min-height: 140px;
+      margin: 16px 0 8px;
+      min-height: 90px;
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 100%;
     }
 
     .year {
-      font-size: clamp(4.2rem, 18vw, 9rem);
+      font-size: clamp(3.5rem, 15vw, 7rem);
       font-weight: 800;
       line-height: 1;
       background: linear-gradient(180deg, #fff6c8 0%, var(--gold) 45%, #c98900 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      filter: drop-shadow(0 8px 24px rgba(244, 196, 48, 0.45));
+      filter: drop-shadow(0 6px 18px rgba(244, 196, 48, 0.45));
     }
 
     .year.pop {
@@ -131,37 +138,40 @@
 
     .sub {
       opacity: 0.85;
-      font-size: 1.05rem;
-      margin-bottom: 28px;
+      font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+      margin-bottom: 20px;
+      text-align: center;
     }
 
     .stage {
-      width: min(920px, 100%);
+      width: 100%;
       display: grid;
-      gap: 22px;
+      gap: 16px;
     }
 
     .card {
       background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
       border: 1px solid rgba(244, 196, 48, 0.28);
-      border-radius: 22px;
-      padding: 16px;
+      border-radius: 16px;
+      padding: 14px;
       backdrop-filter: blur(10px);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      width: 100%;
     }
 
     .card h2 {
-      font-size: 1.15rem;
+      font-size: clamp(1rem, 4vw, 1.2rem);
       color: var(--gold-soft);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       text-align: center;
     }
 
     .video-wrap {
       position: relative;
-      border-radius: 16px;
+      border-radius: 12px;
       overflow: hidden;
       background: #111;
+      width: 100%;
       aspect-ratio: 16/9;
     }
 
@@ -176,14 +186,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
+      width: 100%;
     }
 
     #cardCanvas {
       width: 100%;
-      max-width: 500px;
+      max-width: 100%;
       height: auto;
-      border-radius: 16px;
+      border-radius: 12px;
       display: block;
       background: #1a1020;
     }
@@ -191,9 +202,10 @@
     .actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
       justify-content: center;
-      margin-top: 14px;
+      margin-top: 10px;
+      width: 100%;
     }
 
     button {
@@ -202,11 +214,11 @@
       cursor: pointer;
       color: #2a1a00;
       font-weight: 700;
-      font-size: 0.95rem;
-      padding: 12px 18px;
+      font-size: clamp(0.85rem, 3vw, 0.95rem);
+      padding: 10px 16px;
       border-radius: 999px;
       background: linear-gradient(180deg, #ffe27a, var(--gold));
-      box-shadow: 0 8px 18px rgba(244, 196, 48, 0.28);
+      box-shadow: 0 6px 14px rgba(244, 196, 48, 0.28);
       font-family: inherit;
     }
 
@@ -217,47 +229,92 @@
       box-shadow: none;
     }
 
-    .custom-text-box, .bank-info-box {
+    .custom-text-box {
       text-align: center;
       background: rgba(255, 255, 255, 0.05);
       border: 1px dashed rgba(244, 196, 48, 0.3);
-      border-radius: 12px;
-      padding: 14px;
-      margin-top: 10px;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 6px;
       white-space: pre-line;
-      font-size: 1rem;
+      font-size: clamp(0.9rem, 3.5vw, 1rem);
       color: #ffe27a;
+      word-break: break-word;
     }
 
-    .bank-info-box {
-      border-style: solid;
-      border-color: rgba(11, 138, 62, 0.5);
-      color: #fff;
+    /* የባንክ አካውንቶች ዲዛይን - Responsive */
+    .bank-info-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+      width: 100%;
     }
 
-    .bank-info-box h3 {
+    .bank-card {
+      background: linear-gradient(135deg, rgba(30, 15, 45, 0.75) 0%, rgba(12, 6, 20, 0.85) 100%);
+      border: 1px solid rgba(244, 196, 48, 0.4);
+      border-radius: 12px;
+      padding: 12px 14px 12px 48px;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      width: 100%;
+    }
+
+    .bank-card::before {
+      content: '💳';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 36px;
+      background: linear-gradient(180deg, #f4c430 0%, #a27200 100%);
+      color: #1a0a2e;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 11px 0 0 11px;
+    }
+
+    .bank-name {
       color: var(--gold-soft);
-      font-size: 1.1rem;
-      margin-bottom: 8px;
+      font-size: clamp(0.95rem, 3.5vw, 1.1rem);
+      font-weight: bold;
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+
+    .bank-number {
+      color: #ffffff;
+      font-size: clamp(1rem, 4vw, 1.25rem);
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      font-family: 'Consolas', 'Monaco', monospace, sans-serif;
+      word-break: break-all;
     }
 
     footer {
-      margin-top: 28px;
+      margin-top: 24px;
       opacity: 0.7;
-      font-size: 0.9rem;
+      font-size: clamp(0.8rem, 3vw, 0.9rem);
       text-align: center;
     }
 
     .hidden { display: none !important; }
 
     .burst-msg {
-      min-height: 28px;
+      min-height: 24px;
       text-align: center;
       color: var(--gold-soft);
-      font-size: 1.15rem;
+      font-size: clamp(0.95rem, 3.5vw, 1.1rem);
       opacity: 0;
       transform: translateY(8px);
       transition: 0.5s ease;
+      margin-bottom: 8px;
     }
     .burst-msg.show { opacity: 1; transform: none; }
 
@@ -266,12 +323,15 @@
       right: 14px;
       bottom: 14px;
       z-index: 20;
-      width: 52px;
-      height: 52px;
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
       padding: 0;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       background: #f4c430;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .admin-panel {
@@ -280,7 +340,7 @@
       z-index: 30;
       background: #eef2ed;
       color: #333;
-      padding: 20px;
+      padding: 16px;
       overflow-y: auto;
       font-family: inherit;
     }
@@ -288,28 +348,28 @@
     .admin-header {
       background: #0b8a3e;
       color: #fff;
-      padding: 14px 18px;
+      padding: 12px 16px;
       border-radius: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       font-weight: bold;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
 
     .admin-card {
       background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
     .admin-card h4 {
       color: #0b8a3e;
-      font-size: 1.1rem;
-      margin-bottom: 14px;
+      font-size: 1rem;
+      margin-bottom: 10px;
     }
 
     .admin-card textarea, .admin-card input[type="text"] {
@@ -319,58 +379,61 @@
       border: 1px solid #ccc;
       margin-bottom: 10px;
       font-family: inherit;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
     .preview-box {
       border: 2px dashed #ccc;
-      border-radius: 12px;
-      min-height: 120px;
+      border-radius: 8px;
+      min-height: 100px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #888;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       background: #fafafa;
       overflow: hidden;
+      font-size: 0.85rem;
     }
 
     .preview-box img, .preview-box video {
       max-width: 100%;
-      max-height: 200px;
+      max-height: 180px;
       object-fit: contain;
     }
 
     .file-input-wrapper {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
+      gap: 8px;
+      margin-bottom: 12px;
     }
 
     .custom-file-btn {
       background: #f4c430;
       color: #000;
-      padding: 8px 16px;
+      padding: 6px 14px;
       border-radius: 20px;
       font-weight: bold;
       cursor: pointer;
+      font-size: 0.85rem;
     }
 
     .btn-submit {
       width: 100%;
       background: #f59e0b;
       color: #fff;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 1rem;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.95rem;
       border: none;
       font-weight: bold;
       cursor: pointer;
     }
 
     .admin-status {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #0b8a3e;
       margin-top: 8px;
       text-align: center;
@@ -378,8 +441,8 @@
 
     #guestImg {
       width: 100%;
-      max-width: 500px;
-      border-radius: 16px;
+      max-width: 100%;
+      border-radius: 12px;
       display: none;
       object-fit: cover;
     }
@@ -392,9 +455,9 @@
       justify-content: center;
       background: #1a1a1a;
       color: #aaa;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       text-align: center;
-      padding: 16px;
+      padding: 12px;
     }
   </style>
 </head>
@@ -417,7 +480,6 @@
     <p class="burst-msg" id="burstMsg"></p>
 
     <div class="stage hidden" id="after">
-      <!-- ቪድዮ -->
       <section class="card">
         <h2>የአበባ ውበት</h2>
         <div class="video-wrap">
@@ -426,12 +488,10 @@
         </div>
       </section>
 
-      <!-- ተጨማሪ የአድሚን መልእክት -->
       <section class="card hidden" id="customTextSection">
         <div class="custom-text-box" id="displayCustomText"></div>
       </section>
 
-      <!-- የካርድ ምስል ማሳያ -->
       <section class="card">
         <h2>የእንኳን አደረሳችሁ ካርድ — አውርዱ</h2>
         <div class="img-row">
@@ -444,12 +504,9 @@
         </div>
       </section>
 
-      <!-- የበአል ብር መደገፊያ / የባንክ አካውንት -->
       <section class="card hidden" id="bankInfoSection">
-        <div class="bank-info-box">
-          <h3>🎁 የበአል ብር / ስጦታ መላኪያ አካውንቶች</h3>
-          <div id="displayBankInfo"></div>
-        </div>
+        <h2>የባንክ አካውንቶች</h2>
+        <div class="bank-info-container" id="displayBankInfo"></div>
       </section>
     </div>
 
@@ -458,14 +515,12 @@
 
   <button type="button" class="admin-toggle" id="adminToggle" title="አድሚን">⚙</button>
 
-  <!-- አድሚን ፓነል -->
   <div class="admin-panel hidden" id="adminPanel">
     <div class="admin-header">
       <span>አድሚን ገጽ</span>
-      <span id="closeAdmin" style="cursor:pointer;">✕</span>
+      <span id="closeAdmin" style="cursor:pointer; font-size: 1.2rem;">✕</span>
     </div>
 
-    <!-- 1. ምስል ማስገቢያ -->
     <div class="admin-card">
       <h4>ምስል ያስገቡ</h4>
       <div class="preview-box" id="imgPrevBox">ምስል አልተመረጠም</div>
@@ -474,12 +529,11 @@
           Choose file
           <input type="file" id="imageInput" accept="image/*" style="display:none;" />
         </label>
-        <span id="imgFileName" style="font-size:0.85rem; color:#666;">No file chosen</span>
+        <span id="imgFileName" style="font-size:0.8rem; color:#666;">No file chosen</span>
       </div>
       <button type="button" class="btn-submit" id="saveImgBtn">ምስሉን አጽድቅ</button>
     </div>
 
-    <!-- 2. ቪድዮ ማስገቢያ -->
     <div class="admin-card">
       <h4>ቪድዮ ያስገቡ</h4>
       <div class="preview-box" id="vidPrevBox">ቪድዮ አልተመረጠም</div>
@@ -488,22 +542,20 @@
           Choose file
           <input type="file" id="videoInput" accept="video/*" style="display:none;" />
         </label>
-        <span id="vidFileName" style="font-size:0.85rem; color:#666;">No file chosen</span>
+        <span id="vidFileName" style="font-size:0.8rem; color:#666;">No file chosen</span>
       </div>
       <button type="button" class="btn-submit" id="saveVidBtn">ቪድዮ አጽድቅ</button>
     </div>
 
-    <!-- 3. ተጨማሪ መልእክት (Text) ማስገቢያ -->
     <div class="admin-card">
       <h4>የእንኳን አደረሳችሁ ተጨማሪ ጽሑፍ/መልእክት</h4>
       <textarea id="adminTextInput" rows="3" placeholder="ምሳሌ፡ መልካም አዲስ ዓመት ይሁንላችሁ!"></textarea>
       <button type="button" class="btn-submit" id="saveTextBtn">ጽሑፉን አጽድቅ</button>
     </div>
 
-    <!-- 4. የባንክ አካውንት ማስገቢያ -->
     <div class="admin-card">
-      <h4>የበአል ብር መ መቀበያ የባንክ አካውንቶች</h4>
-      <textarea id="adminBankInput" rows="4" placeholder="ምሳሌ፡&#10;ንግድ ባንክ፡ 1000123456789 (ስም)&#10;ቴሌብር፡ 0912345678"></textarea>
+      <h4>የባንክ አካውንቶች</h4>
+      <textarea id="adminBankInput" rows="4" placeholder="ምሳሌ፡&#10;የኢትዮጵያ ንግድ ባንክ : 1000014252022&#10;የዓባይ ባንክ : 3412119187355014"></textarea>
       <button type="button" class="btn-submit" id="saveBankBtn">የባንክ መረጃውን አጽድቅ</button>
     </div>
 
@@ -511,9 +563,7 @@
   </div>
 
   <script>
-    // -------------------------------------------------------------
-    // Firebase Realtime Database Config
-    // -------------------------------------------------------------
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyCu9KnmGTByV8tgvBN1n6TCn66O9pcQPIo",
       authDomain: "frend-58bf3.firebaseapp.com",
@@ -528,9 +578,7 @@
     firebase.initializeApp(firebaseConfig);
     const rtdb = firebase.database();
 
-    // -------------------------------------------------------------
-    // UI Visual Effects
-    // -------------------------------------------------------------
+    // Canvas Fireworks setup
     const yearEl = document.getElementById("year");
     const after = document.getElementById("after");
     const burstMsg = document.getElementById("burstMsg");
@@ -540,30 +588,30 @@
     const cctx = cardCanvas.getContext("2d");
 
     function resize() {
-      canvas.width = innerWidth;
-      canvas.height = innerHeight;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
     addEventListener("resize", resize);
     resize();
 
     const petalsBox = document.getElementById("petals");
-    for (let i = 0; i < 28; i++) {
+    for (let i = 0; i < 20; i++) {
       const p = document.createElement("div");
       p.className = "petal";
       p.style.left = Math.random() * 100 + "%";
-      p.style.animationDuration = 7 + Math.random() * 9 + "s";
-      p.style.animationDelay = Math.random() * 8 + "s";
-      p.style.transform = "scale(" + (0.6 + Math.random() * 1.1) + ")";
+      p.style.animationDuration = 6 + Math.random() * 8 + "s";
+      p.style.animationDelay = Math.random() * 6 + "s";
+      p.style.transform = "scale(" + (0.6 + Math.random() * 0.8) + ")";
       petalsBox.appendChild(p);
     }
 
     let particles = [];
     function boom(x, y) {
       const colors = ["#f4c430", "#ff6b6b", "#7cffb2", "#fff1a8", "#ff9f1c", "#ffffff"];
-      const n = 70 + Math.floor(Math.random() * 40);
+      const n = 50 + Math.floor(Math.random() * 30);
       for (let i = 0; i < n; i++) {
         const a = (Math.PI * 2 * i) / n + Math.random() * 0.2;
-        const s = 1.5 + Math.random() * 5.5;
+        const s = 1.2 + Math.random() * 4.5;
         particles.push({
           x, y,
           vx: Math.cos(a) * s,
@@ -571,7 +619,7 @@
           life: 1,
           decay: 0.008 + Math.random() * 0.012,
           color: colors[i % colors.length],
-          size: 1.5 + Math.random() * 2.2
+          size: 1.2 + Math.random() * 2
         });
       }
     }
@@ -581,7 +629,7 @@
       ctx.fillStyle = "rgba(7,3,15,0.18)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       if (fireworksOn && Math.random() < 0.06) {
-        boom(80 + Math.random() * (canvas.width - 160), 60 + Math.random() * (canvas.height * 0.45));
+        boom(40 + Math.random() * (canvas.width - 80), 40 + Math.random() * (canvas.height * 0.45));
       }
       particles.forEach((p) => {
         p.x += p.vx;
@@ -608,12 +656,12 @@
         yearEl.classList.remove("pop");
         void yearEl.offsetWidth;
         yearEl.classList.add("pop");
-        const delay = y === 2019 ? 700 : 220 + (y - 2010) * 35;
+        const delay = y === 2019 ? 600 : 200 + (y - 2010) * 30;
         await sleep(delay);
       }
       fireworksOn = true;
-      for (let i = 0; i < 8; i++) {
-        boom(100 + Math.random() * (canvas.width - 200), 80 + Math.random() * 220);
+      for (let i = 0; i < 6; i++) {
+        boom(60 + Math.random() * (canvas.width - 120), 60 + Math.random() * 200);
       }
       burstMsg.textContent = "እንኳን ወደ 2019 አዲስ ዓመት በደስታ አደረሳችሁ!";
       burstMsg.classList.add("show");
@@ -640,7 +688,7 @@
       cctx.fillStyle = "#c81e1e";
       cctx.fillRect(0, 56, w, 28);
 
-      for (let i = 0; i < 40; i++) {
+      for (let i = 0; i < 35; i++) {
         const x = Math.random() * w;
         const y = 120 + Math.random() * (h - 200);
         drawFlower(x, y, 18 + Math.random() * 28);
@@ -680,14 +728,12 @@
     }
 
     document.getElementById("againBtn").addEventListener("click", () => {
-      for (let i = 0; i < 10; i++) {
-        boom(80 + Math.random() * (canvas.width - 160), 50 + Math.random() * 260);
+      for (let i = 0; i < 8; i++) {
+        boom(60 + Math.random() * (canvas.width - 120), 50 + Math.random() * 220);
       }
     });
 
-    // -------------------------------------------------------------
-    // Admin & Realtime Database Handlers
-    // -------------------------------------------------------------
+    // Admin Handlers
     const videoEl = document.getElementById("flowerVideo");
     const videoPh = document.getElementById("videoPh");
     const guestImg = document.getElementById("guestImg");
@@ -703,7 +749,7 @@
     adminToggle.addEventListener("click", () => {
       if (adminPanel.classList.contains("hidden")) {
         const pass = prompt("እባክዎን የአድሚን ኮድ ያስገቡ:");
-        if (pass === "121310") {
+        if (pass === "@2116#10") {
           adminPanel.classList.remove("hidden");
         } else if (pass !== null) {
           alert("የተሳሳተ ኮድ ነው!");
@@ -739,7 +785,6 @@
       });
     }
 
-    // Input listeners
     document.getElementById("imageInput").addEventListener("change", async (e) => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
@@ -754,11 +799,10 @@
       document.getElementById("vidFileName").textContent = file.name;
       setStatus("ቪድዮው በማዘጋጀት ላይ ነው...");
       selectedVidBase64 = await fileToBase64(file);
-      document.getElementById("vidPrevBox").innerHTML = `<video src="${selectedVidBase64}" controls style="max-height:150px;"></video>`;
+      document.getElementById("vidPrevBox").innerHTML = `<video src="${selectedVidBase64}" controls style="max-height:140px;"></video>`;
       setStatus("ቪድዮ ዝግጁ ነው!");
     });
 
-    // Save Handlers to Database
     document.getElementById("saveImgBtn").addEventListener("click", async () => {
       if (!selectedImgBase64) return alert("እባክዎን ምስል ይምረጡ!");
       setStatus("ምስል እየተጫነ ነው...");
@@ -805,7 +849,6 @@
       }
     });
 
-    // Download Button
     document.getElementById("downloadBtn").addEventListener("click", () => {
       if (currentImageUrl) {
         const a = document.createElement("a");
@@ -820,7 +863,7 @@
       a.click();
     });
 
-    // Realtime Database Event Listeners
+    // Database Listeners
     rtdb.ref("newyear_media/image").on("value", (snapshot) => {
       if (snapshot.exists()) applyImageURL(snapshot.val());
     });
@@ -844,10 +887,37 @@
     rtdb.ref("newyear_media/bankInfo").on("value", (snapshot) => {
       const sec = document.getElementById("bankInfoSection");
       const disp = document.getElementById("displayBankInfo");
+      
       if (snapshot.exists() && snapshot.val()) {
-        disp.textContent = snapshot.val();
+        const rawText = snapshot.val();
+        document.getElementById("adminBankInput").value = rawText;
+        
+        const lines = rawText.split('\n').filter(line => line.trim() !== '');
+        let htmlContent = '';
+
+        lines.forEach(line => {
+          const parts = line.split(':');
+          if (parts.length >= 2) {
+            const bankName = parts[0].trim();
+            const bankAcc = parts.slice(1).join(':').trim();
+            
+            htmlContent += `
+              <div class="bank-card">
+                <div class="bank-name">${bankName}</div>
+                <div class="bank-number">${bankAcc}</div>
+              </div>
+            `;
+          } else {
+            htmlContent += `
+              <div class="bank-card">
+                <div class="bank-name">${line.trim()}</div>
+              </div>
+            `;
+          }
+        });
+
+        disp.innerHTML = htmlContent;
         sec.classList.remove("hidden");
-        document.getElementById("adminBankInput").value = snapshot.val();
       } else {
         sec.classList.add("hidden");
       }
