@@ -116,9 +116,7 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      text-shadow: none;
       filter: drop-shadow(0 8px 24px rgba(244, 196, 48, 0.45));
-      transition: transform 0.25s ease;
     }
 
     .year.pop {
@@ -129,16 +127,6 @@
       0% { transform: scale(0.55) rotate(-8deg); opacity: 0.3; }
       60% { transform: scale(1.12) rotate(3deg); }
       100% { transform: scale(1) rotate(0); opacity: 1; }
-    }
-
-    .year.final {
-      animation: finalShine 1.2s ease;
-    }
-
-    @keyframes finalShine {
-      0% { transform: scale(1); }
-      40% { transform: scale(1.18); }
-      100% { transform: scale(1); }
     }
 
     .sub {
@@ -185,17 +173,15 @@
     }
 
     .img-row {
-      display: grid;
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       gap: 14px;
-    }
-
-    @media (min-width: 720px) {
-      .img-row { grid-template-columns: 1.1fr 0.9fr; align-items: start; }
     }
 
     #cardCanvas {
       width: 100%;
+      max-width: 500px;
       height: auto;
       border-radius: 16px;
       display: block;
@@ -214,7 +200,6 @@
       appearance: none;
       border: 0;
       cursor: pointer;
-      text-decoration: none;
       color: #2a1a00;
       font-weight: 700;
       font-size: 0.95rem;
@@ -225,13 +210,35 @@
       font-family: inherit;
     }
 
-    button:hover { filter: brightness(1.06); }
-
     button.ghost {
       background: transparent;
       color: var(--gold-soft);
       border: 1px solid rgba(244, 196, 48, 0.45);
       box-shadow: none;
+    }
+
+    .custom-text-box, .bank-info-box {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(244, 196, 48, 0.3);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 10px;
+      white-space: pre-line;
+      font-size: 1rem;
+      color: #ffe27a;
+    }
+
+    .bank-info-box {
+      border-style: solid;
+      border-color: rgba(11, 138, 62, 0.5);
+      color: #fff;
+    }
+
+    .bank-info-box h3 {
+      color: var(--gold-soft);
+      font-size: 1.1rem;
+      margin-bottom: 8px;
     }
 
     footer {
@@ -305,6 +312,16 @@
       margin-bottom: 14px;
     }
 
+    .admin-card textarea, .admin-card input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+
     .preview-box {
       border: 2px dashed #ccc;
       border-radius: 12px;
@@ -361,9 +378,9 @@
 
     #guestImg {
       width: 100%;
+      max-width: 500px;
       border-radius: 16px;
       display: none;
-      max-height: 70vh;
       object-fit: cover;
     }
 
@@ -400,29 +417,38 @@
     <p class="burst-msg" id="burstMsg"></p>
 
     <div class="stage hidden" id="after">
+      <!-- ቪድዮ -->
       <section class="card">
         <h2>የአበባ ውበት</h2>
         <div class="video-wrap">
-          <div class="video-placeholder" id="videoPh">ቪድዮ ለማስገባት ከታች ያለውን አድሚን ይጫኑ</div>
+          <div class="video-placeholder" id="videoPh">ቪድዮ ለማስገባት አድሚን ገጽን ይጠቀሙ</div>
           <video id="flowerVideo" autoplay muted loop playsinline controls class="hidden"></video>
         </div>
       </section>
 
+      <!-- ተጨማሪ የአድሚን መልእክት -->
+      <section class="card hidden" id="customTextSection">
+        <div class="custom-text-box" id="displayCustomText"></div>
+      </section>
+
+      <!-- የካርድ ምስል ማሳያ -->
       <section class="card">
-        <h2>የእንኳን አደረሳችሁ ካርድ — አስቀምጡ / አውርዱ</h2>
+        <h2>የእንኳን አደረሳችሁ ካርድ — አውርዱ</h2>
         <div class="img-row">
           <img id="guestImg" alt="የተመረጠ ምስል" />
           <canvas id="cardCanvas" width="900" height="1200"></canvas>
-          <div>
-            <p style="line-height:1.7;opacity:.9;margin-bottom:12px;">
-              ነባሪ ካርድ ወይም ከጋለሪ የመረጡት ምስል እዚህ ይታያል።
-              <strong>አውርድ</strong> ብለው ማስቀመጥ ይችላሉ።
-            </p>
-            <div class="actions">
-              <button type="button" id="downloadBtn">ምስሉን አውርድ</button>
-              <button type="button" class="ghost" id="againBtn">እሳት ብልጭታ እንደገና</button>
-            </div>
+          <div class="actions">
+            <button type="button" id="downloadBtn">ምስሉን አውርድ</button>
+            <button type="button" class="ghost" id="againBtn">እሳት ብልጭታ እንደገና</button>
           </div>
+        </div>
+      </section>
+
+      <!-- የበአል ብር መደገፊያ / የባንክ አካውንት -->
+      <section class="card hidden" id="bankInfoSection">
+        <div class="bank-info-box">
+          <h3>🎁 የበአል ብር / ስጦታ መላኪያ አካውንቶች</h3>
+          <div id="displayBankInfo"></div>
         </div>
       </section>
     </div>
@@ -432,12 +458,14 @@
 
   <button type="button" class="admin-toggle" id="adminToggle" title="አድሚን">⚙</button>
 
+  <!-- አድሚን ፓነል -->
   <div class="admin-panel hidden" id="adminPanel">
     <div class="admin-header">
       <span>አድሚን ገጽ</span>
       <span id="closeAdmin" style="cursor:pointer;">✕</span>
     </div>
 
+    <!-- 1. ምስል ማስገቢያ -->
     <div class="admin-card">
       <h4>ምስል ያስገቡ</h4>
       <div class="preview-box" id="imgPrevBox">ምስል አልተመረጠም</div>
@@ -451,6 +479,7 @@
       <button type="button" class="btn-submit" id="saveImgBtn">ምስሉን አጽድቅ</button>
     </div>
 
+    <!-- 2. ቪድዮ ማስገቢያ -->
     <div class="admin-card">
       <h4>ቪድዮ ያስገቡ</h4>
       <div class="preview-box" id="vidPrevBox">ቪድዮ አልተመረጠም</div>
@@ -464,12 +493,26 @@
       <button type="button" class="btn-submit" id="saveVidBtn">ቪድዮ አጽድቅ</button>
     </div>
 
+    <!-- 3. ተጨማሪ መልእክት (Text) ማስገቢያ -->
+    <div class="admin-card">
+      <h4>የእንኳን አደረሳችሁ ተጨማሪ ጽሑፍ/መልእክት</h4>
+      <textarea id="adminTextInput" rows="3" placeholder="ምሳሌ፡ መልካም አዲስ ዓመት ይሁንላችሁ!"></textarea>
+      <button type="button" class="btn-submit" id="saveTextBtn">ጽሑፉን አጽድቅ</button>
+    </div>
+
+    <!-- 4. የባንክ አካውንት ማስገቢያ -->
+    <div class="admin-card">
+      <h4>የበአል ብር መ መቀበያ የባንክ አካውንቶች</h4>
+      <textarea id="adminBankInput" rows="4" placeholder="ምሳሌ፡&#10;ንግድ ባንክ፡ 1000123456789 (ስም)&#10;ቴሌብር፡ 0912345678"></textarea>
+      <button type="button" class="btn-submit" id="saveBankBtn">የባንክ መረጃውን አጽድቅ</button>
+    </div>
+
     <p class="admin-status" id="adminStatus"></p>
   </div>
 
   <script>
     // -------------------------------------------------------------
-    // Firebase Realtime Database Configuration
+    // Firebase Realtime Database Config
     // -------------------------------------------------------------
     const firebaseConfig = {
       apiKey: "AIzaSyCu9KnmGTByV8tgvBN1n6TCn66O9pcQPIo",
@@ -486,7 +529,7 @@
     const rtdb = firebase.database();
 
     // -------------------------------------------------------------
-    // Animation & UI Logic
+    // UI Visual Effects
     // -------------------------------------------------------------
     const yearEl = document.getElementById("year");
     const after = document.getElementById("after");
@@ -568,7 +611,6 @@
         const delay = y === 2019 ? 700 : 220 + (y - 2010) * 35;
         await sleep(delay);
       }
-      yearEl.classList.add("final");
       fireworksOn = true;
       for (let i = 0; i < 8; i++) {
         boom(100 + Math.random() * (canvas.width - 200), 80 + Math.random() * 220);
@@ -688,7 +730,6 @@
       videoEl.play().catch(() => {});
     }
 
-    // Helper: File -> Base64 Data URL
     function fileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -698,7 +739,7 @@
       });
     }
 
-    // Local Previews & Conversion
+    // Input listeners
     document.getElementById("imageInput").addEventListener("change", async (e) => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
@@ -717,30 +758,50 @@
       setStatus("ቪድዮ ዝግጁ ነው!");
     });
 
-    // Realtime Database Upload Handlers
+    // Save Handlers to Database
     document.getElementById("saveImgBtn").addEventListener("click", async () => {
       if (!selectedImgBase64) return alert("እባክዎን ምስል ይምረጡ!");
-      setStatus("ምስል ወደ Database እየተጫነ ነው...");
+      setStatus("ምስል እየተጫነ ነው...");
       try {
         await rtdb.ref("newyear_media/image").set(selectedImgBase64);
         applyImageURL(selectedImgBase64);
-        setStatus("ምስል በስኬት ተቀምጧል!");
+        setStatus("ምስል ተቀምጧል!");
       } catch (err) {
-        console.error(err);
         setStatus("ምስል መጫን አልተቻለም!");
       }
     });
 
     document.getElementById("saveVidBtn").addEventListener("click", async () => {
       if (!selectedVidBase64) return alert("እባክዎን ቪድዮ ይምረጡ!");
-      setStatus("ቪድዮ ወደ Database እየተጫነ ነው...");
+      setStatus("ቪድዮ እየተጫነ ነው...");
       try {
         await rtdb.ref("newyear_media/video").set(selectedVidBase64);
         applyVideoURL(selectedVidBase64);
-        setStatus("ቪድዮ በስኬት ተቀምጧል!");
+        setStatus("ቪድዮ ተቀምጧል!");
       } catch (err) {
-        console.error(err);
-        setStatus("ቪድዮ መጫን አልተቻለም! (የቪድዮውን መጠን አነስ አድርገው ይሞክሩ)");
+        setStatus("ቪድዮ መጫን አልተቻለም!");
+      }
+    });
+
+    document.getElementById("saveTextBtn").addEventListener("click", async () => {
+      const val = document.getElementById("adminTextInput").value.trim();
+      setStatus("ጽሑፍ እየተቀየረ ነው...");
+      try {
+        await rtdb.ref("newyear_media/customText").set(val);
+        setStatus("ጽሑፉ በስኬት ተቀምጧል!");
+      } catch (err) {
+        setStatus("ጽሑፍ ማስቀመጥ አልተቻለም!");
+      }
+    });
+
+    document.getElementById("saveBankBtn").addEventListener("click", async () => {
+      const val = document.getElementById("adminBankInput").value.trim();
+      setStatus("የባንክ መረጃ እየተቀየረ ነው...");
+      try {
+        await rtdb.ref("newyear_media/bankInfo").set(val);
+        setStatus("የባንክ መረጃ ተቀምጧል!");
+      } catch (err) {
+        setStatus("የባንክ መረጃ ማስቀመጥ አልተቻለም!");
       }
     });
 
@@ -759,16 +820,38 @@
       a.click();
     });
 
-    // Fetch Data from Realtime Database on Load
-    (function restoreFromDatabase() {
-      rtdb.ref("newyear_media/image").once("value", (snapshot) => {
-        if (snapshot.exists()) applyImageURL(snapshot.val());
-      });
+    // Realtime Database Event Listeners
+    rtdb.ref("newyear_media/image").on("value", (snapshot) => {
+      if (snapshot.exists()) applyImageURL(snapshot.val());
+    });
 
-      rtdb.ref("newyear_media/video").once("value", (snapshot) => {
-        if (snapshot.exists()) applyVideoURL(snapshot.val());
-      });
-    })();
+    rtdb.ref("newyear_media/video").on("value", (snapshot) => {
+      if (snapshot.exists()) applyVideoURL(snapshot.val());
+    });
+
+    rtdb.ref("newyear_media/customText").on("value", (snapshot) => {
+      const sec = document.getElementById("customTextSection");
+      const disp = document.getElementById("displayCustomText");
+      if (snapshot.exists() && snapshot.val()) {
+        disp.textContent = snapshot.val();
+        sec.classList.remove("hidden");
+        document.getElementById("adminTextInput").value = snapshot.val();
+      } else {
+        sec.classList.add("hidden");
+      }
+    });
+
+    rtdb.ref("newyear_media/bankInfo").on("value", (snapshot) => {
+      const sec = document.getElementById("bankInfoSection");
+      const disp = document.getElementById("displayBankInfo");
+      if (snapshot.exists() && snapshot.val()) {
+        disp.textContent = snapshot.val();
+        sec.classList.remove("hidden");
+        document.getElementById("adminBankInput").value = snapshot.val();
+      } else {
+        sec.classList.add("hidden");
+      }
+    });
 
     runYear();
   </script>
