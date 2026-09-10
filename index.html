@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html lang="am"> 
+<html lang="am">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>እንኳን አደረሳችሁ — 2019</title>
+  
+  <!-- Firebase SDKs (v10 Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
   <style>
     :root {
       --gold: #f4c430;
@@ -172,8 +177,7 @@
       aspect-ratio: 16/9;
     }
 
-    .video-wrap video,
-    .video-wrap img.cover {
+    .video-wrap video {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -206,7 +210,7 @@
       margin-top: 14px;
     }
 
-    button, a.btn, label.btn-style {
+    button {
       appearance: none;
       border: 0;
       cursor: pointer;
@@ -219,11 +223,9 @@
       background: linear-gradient(180deg, #ffe27a, var(--gold));
       box-shadow: 0 8px 18px rgba(244, 196, 48, 0.28);
       font-family: inherit;
-      display: inline-block;
-      text-align: center;
     }
 
-    button:hover, a.btn:hover, label.btn-style:hover { filter: brightness(1.06); }
+    button:hover { filter: brightness(1.06); }
 
     button.ghost {
       background: transparent;
@@ -265,7 +267,6 @@
       background: #f4c430;
     }
 
-    /* አዲስ የአድሚን ፓነል ስታይል (ከምስሉ ጋር የተጣጣመ) */
     .admin-panel {
       position: fixed;
       inset: 0;
@@ -403,7 +404,7 @@
         <h2>የአበባ ውበት</h2>
         <div class="video-wrap">
           <div class="video-placeholder" id="videoPh">ቪድዮ ለማስገባት ከታች ያለውን አድሚን ይጫኑ</div>
-          <video id="flowerVideo" autoplay muted loop playsinline controls></video>
+          <video id="flowerVideo" autoplay muted loop playsinline controls class="hidden"></video>
         </div>
       </section>
 
@@ -431,15 +432,14 @@
 
   <button type="button" class="admin-toggle" id="adminToggle" title="አድሚን">⚙</button>
 
-  <!-- የአድሚን ገፅ (በምስሉ መሰረት የተሰራ) -->
   <div class="admin-panel hidden" id="adminPanel">
     <div class="admin-header">
       <span>አድሚን ገጽ</span>
       <span id="closeAdmin" style="cursor:pointer;">✕</span>
     </div>
 
-    <!-- ምስል መጫኛ -->
     <div class="admin-card">
+      <h4>ምስል ያስገቡ</h4>
       <div class="preview-box" id="imgPrevBox">ምስል አልተመረጠም</div>
       <div class="file-input-wrapper">
         <label class="custom-file-btn">
@@ -451,7 +451,6 @@
       <button type="button" class="btn-submit" id="saveImgBtn">ምስሉን አጽድቅ</button>
     </div>
 
-    <!-- ቪድዮ መጫኛ -->
     <div class="admin-card">
       <h4>ቪድዮ ያስገቡ</h4>
       <div class="preview-box" id="vidPrevBox">ቪድዮ አልተመረጠም</div>
@@ -465,13 +464,30 @@
       <button type="button" class="btn-submit" id="saveVidBtn">ቪድዮ አጽድቅ</button>
     </div>
 
-    <div style="text-align:center;">
-      <button type="button" class="ghost" id="clearMedia" style="color:#c81e1e; border-color:#c81e1e;">የገባውን አጽዳ</button>
-    </div>
     <p class="admin-status" id="adminStatus"></p>
   </div>
 
   <script>
+    // -------------------------------------------------------------
+    // Firebase Realtime Database Configuration
+    // -------------------------------------------------------------
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu9KnmGTByV8tgvBN1n6TCn66O9pcQPIo",
+      authDomain: "frend-58bf3.firebaseapp.com",
+      databaseURL: "https://frend-58bf3-default-rtdb.firebaseio.com",
+      projectId: "frend-58bf3",
+      storageBucket: "frend-58bf3.firebasestorage.app",
+      messagingSenderId: "49103792839",
+      appId: "1:49103792839:web:293ab2068b98adaf4a6ce2",
+      measurementId: "G-JV8CN7QBM7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const rtdb = firebase.database();
+
+    // -------------------------------------------------------------
+    // Animation & UI Logic
+    // -------------------------------------------------------------
     const yearEl = document.getElementById("year");
     const after = document.getElementById("after");
     const burstMsg = document.getElementById("burstMsg");
@@ -627,6 +643,9 @@
       }
     });
 
+    // -------------------------------------------------------------
+    // Admin & Realtime Database Handlers
+    // -------------------------------------------------------------
     const videoEl = document.getElementById("flowerVideo");
     const videoPh = document.getElementById("videoPh");
     const guestImg = document.getElementById("guestImg");
@@ -635,12 +654,10 @@
     const closeAdmin = document.getElementById("closeAdmin");
     const adminStatus = document.getElementById("adminStatus");
 
-    const DB_NAME = "enkutatash2019";
     let currentImageUrl = null;
-    let selectedImgFile = null;
-    let selectedVidFile = null;
+    let selectedImgBase64 = null;
+    let selectedVidBase64 = null;
 
-    // የይለፍ ቃል (Password) ማረጋገጫ - 121310
     adminToggle.addEventListener("click", () => {
       if (adminPanel.classList.contains("hidden")) {
         const pass = prompt("እባክዎን የአድሚን ኮድ ያስገቡ:");
@@ -654,138 +671,80 @@
       }
     });
 
-    closeAdmin.addEventListener("click", () => {
-      adminPanel.classList.add("hidden");
-    });
-
+    closeAdmin.addEventListener("click", () => adminPanel.classList.add("hidden"));
     function setStatus(t) { adminStatus.textContent = t; }
 
-    function openDB() {
-      return new Promise((resolve, reject) => {
-        const req = indexedDB.open(DB_NAME, 1);
-        req.onupgradeneeded = () => {
-          const db = req.result;
-          if (!db.objectStoreNames.contains("media")) db.createObjectStore("media");
-        };
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      });
+    function applyImageURL(dataUrl) {
+      currentImageUrl = dataUrl;
+      guestImg.src = dataUrl;
+      guestImg.style.display = "block";
+      cardCanvas.style.display = "none";
     }
 
-    async function saveBlob(key, blob) {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction("media", "readwrite");
-        tx.objectStore("media").put(blob, key);
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-      });
-    }
-
-    async function loadBlob(key) {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction("media", "readonly");
-        const r = tx.objectStore("media").get(key);
-        r.onsuccess = () => resolve(r.result || null);
-        r.onerror = () => reject(r.error);
-      });
-    }
-
-    async function delBlob(key) {
-      const db = await openDB();
-      return new Promise((resolve) => {
-        const tx = db.transaction("media", "readwrite");
-        tx.objectStore("media").delete(key);
-        tx.oncomplete = () => resolve();
-      });
-    }
-
-    function applyVideo(blob) {
-      const url = URL.createObjectURL(blob);
-      videoEl.src = url;
+    function applyVideoURL(dataUrl) {
+      videoEl.src = dataUrl;
       videoEl.classList.remove("hidden");
       videoPh.style.display = "none";
       videoEl.play().catch(() => {});
     }
 
-    function applyImage(blob) {
-      const url = URL.createObjectURL(blob);
-      currentImageUrl = url;
-      guestImg.src = url;
-      guestImg.style.display = "block";
-      cardCanvas.style.display = "none";
+    // Helper: File -> Base64 Data URL
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+      });
     }
 
-    // ምስል ሲመረጥ Preview ማሳያ
-    document.getElementById("imageInput").addEventListener("change", (e) => {
+    // Local Previews & Conversion
+    document.getElementById("imageInput").addEventListener("change", async (e) => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
-      selectedImgFile = file;
       document.getElementById("imgFileName").textContent = file.name;
-      const url = URL.createObjectURL(file);
-      document.getElementById("imgPrevBox").innerHTML = `<img src="${url}" />`;
+      selectedImgBase64 = await fileToBase64(file);
+      document.getElementById("imgPrevBox").innerHTML = `<img src="${selectedImgBase64}" />`;
     });
 
-    // ቪድዮ ሲመረጥ Preview ማሳያ
-    document.getElementById("videoInput").addEventListener("change", (e) => {
+    document.getElementById("videoInput").addEventListener("change", async (e) => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
-      selectedVidFile = file;
       document.getElementById("vidFileName").textContent = file.name;
-      const url = URL.createObjectURL(file);
-      document.getElementById("vidPrevBox").innerHTML = `<video src="${url}" controls style="max-height:150px;"></video>`;
+      setStatus("ቪድዮው በማዘጋጀት ላይ ነው...");
+      selectedVidBase64 = await fileToBase64(file);
+      document.getElementById("vidPrevBox").innerHTML = `<video src="${selectedVidBase64}" controls style="max-height:150px;"></video>`;
+      setStatus("ቪድዮ ዝግጁ ነው!");
     });
 
-    // ምስሉን ማጽደቂያ ቁልፍ
+    // Realtime Database Upload Handlers
     document.getElementById("saveImgBtn").addEventListener("click", async () => {
-      if (!selectedImgFile) {
-        alert("እባክዎን መጀመሪያ ምስል ይምረጡ!");
-        return;
-      }
+      if (!selectedImgBase64) return alert("እባክዎን ምስል ይምረጡ!");
+      setStatus("ምስል ወደ Database እየተጫነ ነው...");
       try {
-        await saveBlob("image", selectedImgFile);
-        applyImage(selectedImgFile);
-        setStatus("ምስል በስኬት ጸድቋል!");
+        await rtdb.ref("newyear_media/image").set(selectedImgBase64);
+        applyImageURL(selectedImgBase64);
+        setStatus("ምስል በስኬት ተቀምጧል!");
       } catch (err) {
-        applyImage(selectedImgFile);
-        setStatus("ምስል ታይቷል (ማስቀመጥ አልተቻለም)");
+        console.error(err);
+        setStatus("ምስል መጫን አልተቻለም!");
       }
     });
 
-    // ቪድዮውን ማጽደቂያ ቁልፍ
     document.getElementById("saveVidBtn").addEventListener("click", async () => {
-      if (!selectedVidFile) {
-        alert("እባክዎን መጀመሪያ ቪድዮ ይምረጡ!");
-        return;
-      }
+      if (!selectedVidBase64) return alert("እባክዎን ቪድዮ ይምረጡ!");
+      setStatus("ቪድዮ ወደ Database እየተጫነ ነው...");
       try {
-        await saveBlob("video", selectedVidFile);
-        applyVideo(selectedVidFile);
-        setStatus("ቪድዮ በስኬት ጸድቋል!");
+        await rtdb.ref("newyear_media/video").set(selectedVidBase64);
+        applyVideoURL(selectedVidBase64);
+        setStatus("ቪድዮ በስኬት ተቀምጧል!");
       } catch (err) {
-        applyVideo(selectedVidFile);
-        setStatus("ቪድዮ ታይቷል (ማስቀመጥ አልተቻለም)");
+        console.error(err);
+        setStatus("ቪድዮ መጫን አልተቻለም! (የቪድዮውን መጠን አነስ አድርገው ይሞክሩ)");
       }
     });
 
-    document.getElementById("clearMedia").addEventListener("click", async () => {
-      await delBlob("video");
-      await delBlob("image");
-      videoEl.removeAttribute("src");
-      videoEl.load();
-      videoPh.style.display = "flex";
-      guestImg.removeAttribute("src");
-      guestImg.style.display = "none";
-      cardCanvas.style.display = "block";
-      currentImageUrl = null;
-      document.getElementById("imgPrevBox").textContent = "ምስል አልተመረጠም";
-      document.getElementById("vidPrevBox").textContent = "ቪድዮ አልተመረጠም";
-      document.getElementById("imgFileName").textContent = "No file chosen";
-      document.getElementById("vidFileName").textContent = "No file chosen";
-      setStatus("ተጽርዟል");
-    });
-
+    // Download Button
     document.getElementById("downloadBtn").addEventListener("click", () => {
       if (currentImageUrl) {
         const a = document.createElement("a");
@@ -800,13 +759,15 @@
       a.click();
     });
 
-    (async function restore() {
-      try {
-        const v = await loadBlob("video");
-        if (v) applyVideo(v);
-        const im = await loadBlob("image");
-        if (im) applyImage(im);
-      } catch (_) {}
+    // Fetch Data from Realtime Database on Load
+    (function restoreFromDatabase() {
+      rtdb.ref("newyear_media/image").once("value", (snapshot) => {
+        if (snapshot.exists()) applyImageURL(snapshot.val());
+      });
+
+      rtdb.ref("newyear_media/video").once("value", (snapshot) => {
+        if (snapshot.exists()) applyVideoURL(snapshot.val());
+      });
     })();
 
     runYear();
