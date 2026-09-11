@@ -242,7 +242,7 @@
       word-break: break-word;
     }
 
-    /* የባንክ አካውንቶች ዲዛይን - Responsive */
+    /* የባንክ አካውንቶች ዲዛይን */
     .bank-info-container {
       display: flex;
       flex-direction: column;
@@ -746,10 +746,11 @@
     let selectedImgBase64 = null;
     let selectedVidBase64 = null;
 
+    // የአድሚን ፓስወርድ እዚህ ጋር ወደ 2116@10 ተቀይሯል
     adminToggle.addEventListener("click", () => {
       if (adminPanel.classList.contains("hidden")) {
         const pass = prompt("እባክዎን የአድሚን ኮድ ያስገቡ:");
-        if (pass === "@2116#10") {
+        if (pass === "2116@10") {
           adminPanel.classList.remove("hidden");
         } else if (pass !== null) {
           alert("የተሳሳተ ኮድ ነው!");
